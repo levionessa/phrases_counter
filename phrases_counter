@@ -1,0 +1,33 @@
+#!/usr/bin/env python
+from collections import Counter
+import fileinput
+import string
+
+def sanitize_text(text):
+    return text.translate(None, string.punctuation).lower()
+
+
+def chunk_text(sanitized_text):
+    split_text = sanitized_text.split()
+    return [split_text[i:i + 3] for i in xrange(0, len(split_text), 1)]
+
+
+def phrase_count(chunked_text):
+    word_counter = Counter()
+    for phrase in chunked_text:
+        word_counter[string.join(phrase)] += 1
+    return word_counter
+
+def get_text():
+    text = ""
+    for line in fileinput.input():
+        text += line
+    return text
+
+def main():
+    text = get_text()
+    common_phrases = phrase_count(chunk_text(sanitize_text(text))).most_common(100)
+    for phrase, count in common_phrases:
+        print count, '-', phrase
+
+main()
